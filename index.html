@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Click the Circle - Pure JS</title>
+</head>
+<body>
+<script>
+  // Create style for circle and page
+  const style = document.createElement('style');
+  style.textContent = `
+    body {
+      margin: 0; 
+      overflow: hidden; 
+      font-family: Arial, sans-serif; 
+      text-align: center;
+      background: #222;
+      color: white;
+      user-select: none;
+    }
+    #score {
+      font-size: 24px; 
+      margin: 20px;
+    }
+    #circle {
+      width: 100px;
+      height: 100px;
+      background: red;
+      border-radius: 50%;
+      position: absolute;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff0000;
+      transition: top 0.3s ease, left 0.3s ease;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Create score display
+  const scoreDisplay = document.createElement('div');
+  scoreDisplay.id = 'score';
+  scoreDisplay.textContent = 'Score: 0';
+  document.body.appendChild(scoreDisplay);
+
+  // Create circle element
+  const circle = document.createElement('div');
+  circle.id = 'circle';
+  document.body.appendChild(circle);
+
+  let score = 0;
+
+  function moveCircle() {
+    const maxX = window.innerWidth - circle.offsetWidth;
+    const maxY = window.innerHeight - circle.offsetHeight;
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY;
+    circle.style.left = randomX + 'px';
+    circle.style.top = randomY + 'px';
+  }
+
+  circle.addEventListener('click', () => {
+    score++;
+    scoreDisplay.textContent = `Score: ${score}`;
+    moveCircle();
+  });
+
+  // Start game by moving circle first time
+  moveCircle();
+
+  // Optional: move circle every 2 seconds if not clicked (makes game harder)
+  setInterval(() => {
+    moveCircle();
+  }, 2000);
+</script>
+</body>
+</html>
