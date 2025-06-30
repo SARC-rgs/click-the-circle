@@ -1,74 +1,323 @@
-<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Click the Circle - Pure JS</title>
-</head>
-<body>
-<script>
-  // Create style for circle and page
-  const style = document.createElement('style');
-  style.textContent = `
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Click the Circle</title>
+  <style>
     body {
-      margin: 0; 
-      overflow: hidden; 
-      font-family: Arial, sans-serif; 
-      text-align: center;
-      background: #222;
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background-color: black;
       color: white;
+      text-align: center;
       user-select: none;
     }
-    #score {
-      font-size: 24px; 
-      margin: 20px;
+
+    /* MAIN MENU */
+    #mainMenu {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
+
+    #startButton {
+      font-size: 28px;
+      padding: 15px 40px;
+      border-radius: 30px;
+      border: none;
+      background-color: #e74c3c;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    #startButton:hover {
+      background-color: #c0392b;
+    }
+
+    /* GAME UI */
     #circle {
       width: 100px;
       height: 100px;
-      background: red;
+      background: #e74c3c;
       border-radius: 50%;
       position: absolute;
       cursor: pointer;
-      box-shadow: 0 0 10px #ff0000;
-      transition: top 0.3s ease, left 0.3s ease;
+      transition: transform 0.2s, left 0.3s, top 0.3s, box-shadow 0.3s;
+      animation: pulse 2s infinite;
     }
-  `;
-  document.head.appendChild(style);
 
-  // Create score display
-  const scoreDisplay = document.createElement('div');
-  scoreDisplay.id = 'score';
-  scoreDisplay.textContent = 'Score: 0';
-  document.body.appendChild(scoreDisplay);
+    #circle:active {
+      transform: scale(0.8);
+      animation: none;
+      box-shadow: 0 0 15px 5px #e74c3c;
+    }
 
-  // Create circle element
-  const circle = document.createElement('div');
-  circle.id = 'circle';
-  document.body.appendChild(circle);
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 8px 3px rgba(231, 76, 60, 0.6); }
+      50% { box-shadow: 0 0 15px 6px rgba(231, 76, 60, 1); }
+    }
 
+    #timer {
+      font-size: 28px;
+      margin-top: 20px;
+    }
+
+    #score {
+      font-size: 28px;
+      margin-top: 20px;
+      color: #f1c40f;
+      text-shadow: 0 0 10px #f1c40f, 0 0 20px #f1c40f;
+      transition: transform 0.2s;
+    }
+
+    #highScore {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      font-size: 22px;
+      background: #2980b9;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px #2980b9;
+      z-index: 99999;
+    }
+
+    #message {
+      font-size: 24px;
+      margin-top: 15px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #message.visible {
+      opacity: 1;
+    }
+
+    #buttonsContainer {
+      margin-top: 20px;
+    }
+
+    #restartBtn, #creditsBtn {
+      font-size: 20px;
+      padding: 10px 30px;
+      margin: 0 10px;
+      cursor: pointer;
+      border-radius: 25px;
+      border: none;
+      background-color: #e74c3c;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    #restartBtn:hover, #creditsBtn:hover {
+      background-color: #c0392b;
+    }
+
+    #creditsOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: white;
+    }
+
+    #creditsContent {
+      background: #111;
+      padding: 30px 40px;
+      border-radius: 15px;
+      max-width: 80%;
+      text-align: left;
+      box-shadow: 0 0 30px #e74c3c;
+      position: relative;
+    }
+
+    #creditsClose {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      background: none;
+      border: none;
+      color: #e74c3c;
+      cursor: pointer;
+    }
+
+    @keyframes clickFlash {
+      0%   { box-shadow: 0 0 10px #f1c40f; transform: scale(1.1); }
+      50%  { box-shadow: 0 0 25px #f1c40f; transform: scale(0.9); }
+      100% { box-shadow: 0 0 10px #f1c40f; transform: scale(1); }
+    }
+
+    .clicked {
+      animation: clickFlash 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+<!-- MAIN MENU -->
+<div id="mainMenu">
+  <h1>Click the Circle</h1>
+  <button id="startButton">Start</button>
+</div>
+
+<!-- GAME UI -->
+<div id="circle" style="display:none;"></div>
+<div id="timer" style="display:none;">Time: 30</div>
+<div id="score" style="display:none;">Score: 0</div>
+<div id="highScore">High Score: 0</div>
+<div id="message"></div>
+
+<div id="buttonsContainer" style="display:none;">
+  <button id="restartBtn">Restart</button>
+  <button id="creditsBtn">Credits</button>
+</div>
+
+<!-- CREDITS -->
+<div id="creditsOverlay">
+  <div id="creditsContent">
+    <button id="creditsClose">&times;</button>
+    <h2>Credits</h2>
+    <p>Developer: <strong>RGS</strong><br>Sounds: Google Actions Library</p>
+    <p>Made with ❤️ in JavaScript</p>
+  </div>
+</div>
+
+<!-- Sounds -->
+<audio id="clickSound" src="https://actions.google.com/sounds/v1/ui/click.ogg" preload="auto"></audio>
+<audio id="gameOverSound" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" preload="auto"></audio>
+
+<script>
+  const mainMenu = document.getElementById('mainMenu');
+  const startButton = document.getElementById('startButton');
+  const circle = document.getElementById('circle');
+  const timerDisplay = document.getElementById('timer');
+  const scoreDisplay = document.getElementById('score');
+  const highScoreDisplay = document.getElementById('highScore');
+  const message = document.getElementById('message');
+  const restartBtn = document.getElementById('restartBtn');
+  const creditsBtn = document.getElementById('creditsBtn');
+  const creditsOverlay = document.getElementById('creditsOverlay');
+  const creditsClose = document.getElementById('creditsClose');
+  const clickSound = document.getElementById('clickSound');
+  const gameOverSound = document.getElementById('gameOverSound');
+
+  let timeLeft = 30;
+  let timerInterval;
   let score = 0;
+  let highScore = localStorage.getItem('clickCircleHighScore') || 0;
+
+  highScoreDisplay.textContent = `High Score: ${highScore}`;
 
   function moveCircle() {
     const maxX = window.innerWidth - circle.offsetWidth;
     const maxY = window.innerHeight - circle.offsetHeight;
-    const randomX = Math.random() * maxX;
-    const randomY = Math.random() * maxY;
-    circle.style.left = randomX + 'px';
-    circle.style.top = randomY + 'px';
+    circle.style.left = `${Math.random() * maxX}px`;
+    circle.style.top = `${Math.random() * maxY}px`;
+  }
+
+  function startGame() {
+    mainMenu.style.display = 'none';
+    timeLeft = 30;
+    score = 0;
+    message.textContent = '';
+    message.classList.remove('visible');
+    circle.style.display = 'block';
+    timerDisplay.style.display = 'block';
+    scoreDisplay.style.display = 'block';
+    restartBtn.style.display = 'none';
+    creditsBtn.style.display = 'none';
+    document.getElementById('buttonsContainer').style.display = 'block';
+    timerDisplay.textContent = `Time: ${timeLeft}`;
+    scoreDisplay.textContent = `Score: ${score}`;
+
+    moveCircle();
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      timerDisplay.textContent = `Time: ${timeLeft}`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        endGame();
+      }
+    }, 1000);
+  }
+
+  function endGame() {
+    circle.style.display = 'none';
+    gameOverSound.play();
+    message.textContent = `Time's up! Final score: ${score}`;
+    message.classList.add('visible');
+    restartBtn.style.display = 'inline-block';
+    creditsBtn.style.display = 'inline-block';
+
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem('clickCircleHighScore', highScore);
+      highScoreDisplay.textContent = `High Score: ${highScore}`;
+    }
   }
 
   circle.addEventListener('click', () => {
     score++;
     scoreDisplay.textContent = `Score: ${score}`;
+    clickSound.currentTime = 0;
+    clickSound.play();
+
+    // Animate score
+    scoreDisplay.style.transform = 'scale(1.2)';
+    setTimeout(() => {
+      scoreDisplay.style.transform = 'scale(1)';
+    }, 150);
+
+    // Animate circle
+    circle.classList.add('clicked');
+    setTimeout(() => {
+      circle.classList.remove('clicked');
+    }, 300);
+
     moveCircle();
   });
 
-  // Start game by moving circle first time
-  moveCircle();
+  restartBtn.addEventListener('click', () => {
+    startGame();
+  });
 
-  // Optional: move circle every 2 seconds if not clicked (makes game harder)
-  setInterval(() => {
-    moveCircle();
-  }, 2000);
+  creditsBtn.addEventListener('click', () => {
+    creditsOverlay.style.display = 'flex';
+  });
+
+  creditsClose.addEventListener('click', () => {
+    creditsOverlay.style.display = 'none';
+  });
+
+  creditsOverlay.addEventListener('click', (e) => {
+    if (e.target === creditsOverlay) {
+      creditsOverlay.style.display = 'none';
+    }
+  });
+
+  startButton.addEventListener('click', () => {
+    startGame();
+  });
+
+  window.addEventListener('resize', () => {
+    if (circle.style.display !== 'none') moveCircle();
+  });
 </script>
+
 </body>
 </html>
