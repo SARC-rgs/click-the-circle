@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +15,6 @@
     text-align: center;
     user-select: none;
   }
-
   #mainMenu {
     position: absolute;
     top: 0; left: 0;
@@ -26,7 +26,6 @@
     justify-content: center;
     align-items: center;
   }
-
   #startButton {
     font-size: 28px;
     padding: 15px 40px;
@@ -46,7 +45,6 @@
   #startButton.animated {
     animation: buttonPop 0.4s ease forwards;
   }
-
   #circle {
     width: 100px;
     height: 100px;
@@ -69,12 +67,10 @@
     0%, 100% { box-shadow: 0 0 8px 3px rgba(231, 76, 60, 0.6); }
     50% { box-shadow: 0 0 15px 6px rgba(231, 76, 60, 1); }
   }
-
   #timer {
     font-size: 28px;
     margin-top: 20px;
   }
-
   #score {
     font-size: 28px;
     margin-top: 20px;
@@ -82,7 +78,6 @@
     text-shadow: 0 0 10px #f1c40f, 0 0 20px #f1c40f;
     transition: transform 0.2s;
   }
-
   #highScore {
     position: fixed;
     top: 10px;
@@ -95,7 +90,6 @@
     box-shadow: 0 0 10px #2980b9;
     z-index: 99999;
   }
-
   #clothingBtn {
     position: fixed;
     top: 10px;
@@ -114,7 +108,6 @@
   #clothingBtn:hover {
     background-color: #ff1900;
   }
-
   #message {
     font-size: 24px;
     margin-top: 15px;
@@ -124,7 +117,6 @@
   #message.visible {
     opacity: 1;
   }
-
   #buttonsContainer {
     margin-top: 20px;
     opacity: 0;
@@ -135,7 +127,6 @@
     opacity: 1;
     visibility: visible;
   }
-
   #restartBtn, #creditsBtn {
     font-size: 20px;
     padding: 10px 30px;
@@ -157,7 +148,6 @@
   #restartBtn:hover, #creditsBtn:hover {
     background-color: #c0392b;
   }
-
   #creditsOverlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -191,7 +181,6 @@
   #creditsClose:hover {
     transform: scale(1.2);
   }
-
   @keyframes buttonPop {
     0% {
       opacity: 0;
@@ -202,7 +191,6 @@
       transform: scale(1);
     }
   }
-
   #clothingOverlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -219,7 +207,6 @@
     opacity: 1;
     visibility: visible;
   }
-
   #clothingContent {
     background: #222;
     padding: 25px 35px;
@@ -234,7 +221,6 @@
   #clothingOverlay.visible #clothingContent {
     transform: translateY(0);
   }
-
   .skinOption {
     display: inline-block;
     margin: 10px;
@@ -260,9 +246,27 @@
     justify-content: center;
     align-items: center;
   }
-
+  /* Skin arrangement - 2x1 layout */
+  #skinsContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    justify-items: center;
+    margin-bottom: 20px;
+  }
+  /* Position White Hole in second row */
+  .skinOption:nth-child(3) {
+    grid-column: span 2;
+  }
   .skinDefault {
     background: #e74c3c;
+  }
+  .skinBlackHole {
+    background: radial-gradient(circle at center, #000000 30%, #330033 60%, #660066 90%);
+    box-shadow:
+      0 0 20px 8px rgba(255, 0, 255, 0.8),
+      inset 0 0 15px 5px rgba(100, 0, 100, 0.9);
+    border: 2px solid #ff00ff;
   }
   .skinWhiteNebula {
     background: radial-gradient(circle at center, #ffffff 30%, #d0d0ff 60%, #a0a0ff 90%);
@@ -274,12 +278,10 @@
 </style>
 </head>
 <body>
-
 <div id="mainMenu">
   <h1>Click the Circle</h1>
   <button id="startButton">Start</button>
 </div>
-
 <div id="circle" style="display:none;"></div>
 <div id="timer" style="display:none;">Time: 30</div>
 <div id="score" style="display:none;">Score: 0</div>
@@ -290,7 +292,6 @@
   <button id="restartBtn">Restart</button>
   <button id="creditsBtn">Credits</button>
 </div>
-
 <div id="creditsOverlay">
   <div id="creditsContent">
     <button id="creditsClose">&times;</button>
@@ -299,7 +300,6 @@
     <p>Made with ❤️ in JavaScript</p>
   </div>
 </div>
-
 <div id="clothingOverlay">
   <div id="clothingContent">
     <h2>Choose Your Skin</h2>
@@ -307,10 +307,8 @@
     <button id="closeClothingBtn" style="margin-top: 20px; padding: 10px 25px; border-radius: 25px; border:none; background:#e74c3c; color:#fff; cursor:pointer;">Close</button>
   </div>
 </div>
-
 <audio id="clickSound" src="https://actions.google.com/sounds/v1/ui/click.ogg" preload="auto"></audio>
 <audio id="gameOverSound" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" preload="auto"></audio>
-
 <script>
   const mainMenu = document.getElementById('mainMenu');
   const startButton = document.getElementById('startButton');
@@ -330,14 +328,11 @@
   const buttonsContainer = document.getElementById('buttonsContainer');
   const clickSound = document.getElementById('clickSound');
   const gameOverSound = document.getElementById('gameOverSound');
-
   let timeLeft = 30;
   let timerInterval;
   let score = 0;
   let highScore = localStorage.getItem('clickCircleHighScore') || 0;
-
   highScoreDisplay.textContent = `High Score: ${highScore}`;
-
   const skins = [
     {
       name: 'Default',
@@ -349,9 +344,25 @@
         circle.style.height = '100px';
         circle.style.border = 'none';
         circle.style.borderRadius = '50%';
-        circle.textContent = ''; // ← No text
+        circle.textContent = '';
       },
       previewClass: 'skinDefault'
+    },
+    {
+      name: 'Black Hole',
+      apply: () => {
+        circle.style.background = 'radial-gradient(circle at center, #000000 30%, #330033 60%, #660066 90%)';
+        circle.style.boxShadow = `
+          0 0 20px 8px rgba(255, 0, 255, 0.8),
+          inset 0 0 15px 5px rgba(100, 0, 100, 0.9)
+        `;
+        circle.style.border = '2px solid #ff00ff';
+        circle.style.width = '100px';
+        circle.style.height = '100px';
+        circle.style.borderRadius = '50%';
+        circle.textContent = '';
+      },
+      previewClass: 'skinBlackHole'
     },
     {
       name: 'White Hole',
@@ -366,26 +377,22 @@
         circle.style.height = '100px';
         circle.style.border = '3px solid white';
         circle.style.borderRadius = '50%';
-        circle.textContent = ''; // ← No text
+        circle.textContent = '';
       },
       previewClass: 'skinWhiteNebula'
     }
   ];
-
   let currentSkinIndex = 0;
-
   function moveCircle() {
     const maxX = window.innerWidth - circle.offsetWidth;
     const maxY = window.innerHeight - circle.offsetHeight;
     circle.style.left = `${Math.random() * maxX}px`;
     circle.style.top = `${Math.random() * maxY}px`;
   }
-
   function applySkin(index) {
     skins[index].apply();
     currentSkinIndex = index;
   }
-
   function startGame() {
     mainMenu.style.display = 'none';
     timeLeft = 30;
@@ -400,7 +407,6 @@
     scoreDisplay.textContent = `Score: ${score}`;
     applySkin(currentSkinIndex);
     moveCircle();
-
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
       timeLeft--;
@@ -411,48 +417,38 @@
       }
     }, 1000);
   }
-
   function endGame() {
     circle.style.display = 'none';
     gameOverSound.play();
     message.textContent = `Time's up! Final score: ${score}`;
     message.classList.add('visible');
     showButtonsContainer();
-
     if (score > highScore) {
       highScore = score;
       localStorage.setItem('clickCircleHighScore', highScore);
       highScoreDisplay.textContent = `High Score: ${highScore}`;
     }
   }
-
   function createSkinOptions() {
     skinsContainer.innerHTML = '';
     skins.forEach((skin, idx) => {
       const skinDiv = document.createElement('div');
       skinDiv.classList.add('skinOption');
       skinDiv.title = skin.name;
-
       const previewCircle = document.createElement('div');
       previewCircle.classList.add('circle', skin.previewClass);
-
       skinDiv.appendChild(previewCircle);
-
       const skinName = document.createElement('div');
       skinName.className = 'skinName';
       skinName.textContent = skin.name;
-
       skinDiv.appendChild(skinName);
-
       skinDiv.addEventListener('click', () => {
         applySkin(idx);
         closeClothing();
       });
-
       skinsContainer.appendChild(skinDiv);
     });
   }
-
   function openClothing() {
     createSkinOptions();
     clothingOverlay.classList.add('visible');
@@ -460,14 +456,12 @@
   function closeClothing() {
     clothingOverlay.classList.remove('visible');
   }
-
   function showButtonsContainer() {
     buttonsContainer.style.display = 'block';
     restartBtn.classList.add('visible');
     creditsBtn.classList.add('visible');
     buttonsContainer.classList.add('visible');
   }
-
   function hideButtonsContainer() {
     restartBtn.classList.remove('visible');
     creditsBtn.classList.remove('visible');
@@ -476,56 +470,45 @@
       buttonsContainer.style.display = 'none';
     }, 500);
   }
-
   function animateStartButton() {
     startButton.classList.remove('animated');
     void startButton.offsetWidth;
     startButton.classList.add('animated');
   }
-
   clothingBtn.addEventListener('click', openClothing);
   closeClothingBtn.addEventListener('click', closeClothing);
   clothingOverlay.addEventListener('click', e => {
     if (e.target === clothingOverlay) closeClothing();
   });
-
   circle.addEventListener('click', () => {
     score++;
     scoreDisplay.textContent = `Score: ${score}`;
     clickSound.currentTime = 0;
     clickSound.play();
-
     scoreDisplay.style.transform = 'scale(1.2)';
     setTimeout(() => scoreDisplay.style.transform = 'scale(1)', 150);
-
     let glowColor = 'rgba(231, 76, 60, 1)';
-    if (currentSkinIndex === 1) {
-      glowColor = 'rgba(255, 0, 255, 1)';
-    }
-
+    if (currentSkinIndex === 1) glowColor = 'rgba(255, 0, 255, 1)';
+    else if (currentSkinIndex === 2) glowColor = 'rgba(255, 255, 255, 1)';
     circle.style.animation = 'none';
     circle.style.boxShadow = `0 0 20px 10px ${glowColor}`;
     setTimeout(() => {
       circle.style.boxShadow = '';
       circle.style.animation = 'pulse 2s infinite';
     }, 300);
-
     moveCircle();
   });
-
   restartBtn.addEventListener('click', () => {
     restartBtn.disabled = true;
     restartBtn.classList.remove('visible');
     void restartBtn.offsetWidth;
     restartBtn.classList.add('visible');
-
     setTimeout(() => {
       startGame();
       restartBtn.disabled = false;
     }, 400);
     message.classList.remove('visible');
   });
-
   creditsBtn.addEventListener('click', () => {
     creditsBtn.disabled = true;
     creditsBtn.classList.remove('visible');
@@ -534,26 +517,21 @@
     creditsOverlay.style.display = 'flex';
     setTimeout(() => creditsBtn.disabled = false, 400);
   });
-
   creditsClose.addEventListener('click', () => {
     creditsOverlay.style.display = 'none';
   });
-
   startButton.addEventListener('click', () => {
     animateStartButton();
     setTimeout(() => {
       startGame();
     }, 400);
   });
-
   window.addEventListener('resize', () => {
     if (circle.style.display !== 'none') {
       moveCircle();
     }
   });
-
   applySkin(currentSkinIndex);
 </script>
-
 </body>
-</html> 
+</html>
